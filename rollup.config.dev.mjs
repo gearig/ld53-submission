@@ -3,8 +3,12 @@ import { nodeResolve } from '@rollup/plugin-node-resolve';
 import replace from '@rollup/plugin-replace';
 import serve from 'rollup-plugin-serve';
 import typescript from '@rollup/plugin-typescript';
+import livereload from "rollup-plugin-livereload";
 
 export default {
+    watch: {
+        include: 'src/**'
+    },
 
     //  Our game entry point (edit as required)
     input: [
@@ -60,14 +64,18 @@ export default {
 
         //  See https://www.npmjs.com/package/rollup-plugin-serve for config options
         serve({
-            open: true,
+            open: false,
             contentBase: 'dist',
             host: 'localhost',
             port: 10001,
             headers: {
-                'Access-Control-Allow-Origin': '*'
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Origin2': '*'
             }
-        })
+        }),
 
+        livereload({
+            watch: 'dist'
+        })
     ]
 };
