@@ -25,7 +25,9 @@
     "scripts": {
         "dev": "rollup --config rollup.config.dev.mjs",
         "build": "rollup --config rollup.config.dist.mjs",
-        "watch": "rollup --watch --config rollup.config.dev.mjs"
+        "watch": "rollup --watch --config rollup.config.dev.mjs",
+        "andrew": "rollup --watch --config rollup.config.andrew.mjs",
+        "ben": "rollup --watch --config rollup.config.ben.mjs"
     },
     "repository": {
         "type": "git",
