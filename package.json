@@ -25,7 +25,9 @@
     "scripts": {
         "dev": "rollup --config rollup.config.dev.mjs",
         "build": "rollup --config rollup.config.dist.mjs",
-        "watch": "rollup --watch --config rollup.config.dev.mjs"
+        "watch": "rollup --watch --config rollup.config.dev.mjs",
+        "andrew": "rollup --watch --config rollup.config.andrew.mjs",
+        "ben": "rollup --watch --config rollup.config.ben.mjs"
     },
     "repository": {
         "type": "git",
@@ -39,6 +41,7 @@
         "@rollup/plugin-typescript": "^11.1.0",
         "phaser": "^3.60.0",
         "rollup": "^3.20.2",
+        "rollup-plugin-livereload": "^2.0.5",
         "rollup-plugin-serve": "^2.0.2",
         "typescript": "^5.0.3"
     }
