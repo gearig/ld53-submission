@@ -1,103 +1,47 @@
 import * as Phaser from 'phaser';
-import GameConfig = Phaser.Types.Core.GameConfig;
-import {LoadingScene} from "./Scenes";
-import {Player} from "./GameObjects";
 
-declare global {
-    var baseUrl: string;
-
-    interface Window {
-        sizeChanged: () => void;
-        game: Phaser.Game;
-    }
-}
-
-globalThis.baseUrl = "assets/";
-
-export default class DemoScene extends Phaser.Scene
+export default class Demo extends Phaser.Scene
 {
-    private player!: Player;
     constructor ()
     {
-        super('DemoScene');
-    }
-
-    init (data: unknown) {
-        console.log("DemoScene.init", data);
+        super('demo');
     }
 
     preload ()
     {
-        console.log("DemoScene.preload");
+        this.load.image('logo', 'assets/phaser3-logo.png');
+        this.load.image('libs', 'assets/libs.png');
+        this.load.glsl('bundle', 'assets/plasma-bundle.glsl.js');
+        this.load.glsl('stars', 'assets/starfields.glsl.js');
     }
 
     create ()
     {
-        console.log("DemoScene.create");
-        this.player = new Player(this, 100, 100);
-    }
+        this.add.shader('RGB Shift Field', 0, 0, 800, 600).setOrigin(0);
 
-    update(time: number, delta: number) {
-        this.player.update();
+        this.add.shader('Plasma', 0, 412, 800, 172).setOrigin(0);
+
+        this.add.image(400, 300, 'libs');
+
+        const logo = this.add.image(400, 70, 'logo');
+
+        this.tweens.add({
+            targets: logo,
+            y: 350,
+            duration: 1500,
+            ease: 'Sine.inOut',
+            yoyo: true,
+            repeat: -1
+        })
     }
 }
 
-const config: GameConfig = {
+const config = {
     type: Phaser.AUTO,
-    backgroundColor: '#111111',
-    width: 240,
-    height: 224,
-    scale: {
-        mode: Phaser.Scale.FIT,
-    },
-    pixelArt: true,
-    scene: [LoadingScene, DemoScene]
+    backgroundColor: '#125555',
+    width: 800,
+    height: 600,
+    scene: Demo
 };
 
-const gameConfig: GameConfig = {
-    title: 'Phaser game tutorial',
-    type: Phaser.WEBGL,
-    parent: 'game',
-    backgroundColor: '#111111',
-    scale: {
-        mode: Phaser.Scale.ScaleModes.NONE,
-        width: window.innerWidth,
-        height: window.innerHeight,
-    },
-    physics: {
-        default: 'arcade',
-        arcade: {
-            debug: false,
-        },
-    },
-    render: {
-        antialiasGL: false,
-        pixelArt: true,
-    },
-    callbacks: {
-        postBoot: () => {
-            window.sizeChanged();
-        },
-    },
-    canvasStyle: `display: block; width: 100%; height: 100%;`,
-    autoFocus: true,
-    audio: {
-        disableWebAudio: false,
-    },
-    scene: [LoadingScene, DemoScene]
-};
-
-window.sizeChanged = () => {
-    if (window.game.isBooted) {
-        setTimeout(() => {
-            window.game.scale.resize(window.innerWidth, window.innerHeight);
-            window.game.canvas.setAttribute(
-                'style',
-                `display: block; width: ${window.innerWidth}px; height: ${window.innerHeight}px;`,
-            );
-        }, 100);
-    }
-};
-window.onresize = () => window.sizeChanged();
-
-window.game = new Phaser.Game(gameConfig);
+const game = new Phaser.Game(config);
