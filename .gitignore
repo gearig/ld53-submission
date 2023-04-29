@@ -41,7 +41,8 @@ node_modules
 .DS_Store
 
 # Project directories and files
-dist
+dist/game.js
+dist/game.js.map
 
 # System files
 Thumbs.db
