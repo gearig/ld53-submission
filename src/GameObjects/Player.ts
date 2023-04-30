@@ -1,6 +1,7 @@
 import * as Phaser from 'phaser';
 import {Actor} from "./Actor";
 import Vector2 = Phaser.Math.Vector2;
+import { EventNames } from '../events/EventNames';
 
 export class Player extends Actor {
     private keyW: Phaser.Input.Keyboard.Key;
@@ -14,6 +15,7 @@ export class Player extends Actor {
         super(scene, x, y, "player");
 
         this.initAnimations();
+        this.listenToEvents();
 
         this.keyW = this.scene.input.keyboard.addKey('W');
         this.keyA = this.scene.input.keyboard.addKey('A');
@@ -80,5 +82,35 @@ export class Player extends Actor {
         if (this.hp < 0) {
             this.hp = 0;
         }
+    }
+
+    private listenToEvents(): void {
+        globalThis.eventDispatcher.on(EventNames.HEALTH, (payload: any) => {
+            console.log({ payload });
+        });
+        globalThis.eventDispatcher.on(EventNames.SUPPLIES, (payload: any) => {
+            console.log({ payload });
+        });
+        globalThis.eventDispatcher.on(EventNames.TELEPORT, (payload: any) => {
+            console.log({ payload });
+        });
+        globalThis.eventDispatcher.on(EventNames.MISSION_END, (payload: any) => {
+            console.log({ payload });
+        });
+        globalThis.eventDispatcher.on(EventNames.MISSION_START, (payload: any) => {
+            console.log({ payload });
+        });
+        globalThis.eventDispatcher.on(EventNames.TEST, (payload: any) => {
+            console.log({ payload });
+        });
+    }
+
+    public stopListeningToEvents(): void {
+        globalThis.eventDispatcher.off(EventNames.HEALTH);
+        globalThis.eventDispatcher.off(EventNames.SUPPLIES);
+        globalThis.eventDispatcher.off(EventNames.TELEPORT);
+        globalThis.eventDispatcher.off(EventNames.MISSION_END);
+        globalThis.eventDispatcher.off(EventNames.MISSION_START);
+        globalThis.eventDispatcher.off(EventNames.TEST);
     }
 }

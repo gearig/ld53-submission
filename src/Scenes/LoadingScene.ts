@@ -16,6 +16,18 @@ export class LoadingScene extends Scene {
             frameWidth: 16,
             frameHeight: 20,
         });
+        this.load.spritesheet("cyan-light-pillar", "cyan-light-pillar.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+        this.load.spritesheet("purple-light-pillar", "purple-light-pillar.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
+        this.load.spritesheet("yellow-light-pillar", "yellow-light-pillar.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+        });
         this.load.atlas("icons", "free_icons1.png", {
             frames: {
                 "redBottleIcon": {
