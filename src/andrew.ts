@@ -55,6 +55,12 @@ export default class DemoScene extends Phaser.Scene {
     //     this.miniMap.startFollow(this.player, true, 0.1, 0.1);
     // }
 
+    initCamera() {
+        console.log(window.game.scale.width, window.game.scale.height);
+        this.cameras.main.setSize(window.game.scale.width, window.game.scale.height);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+    }
+
     preload () {
         this.load.image('tiles', './assets/apocalypse_2.png');
         this.load.tilemapTiledJSON('map', './assets/town-basic.tmj');
@@ -64,6 +70,7 @@ export default class DemoScene extends Phaser.Scene {
         this.initMap();
         this.player = new Player(this, 0, 780);
         this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);
+        this.initCamera();
         this.physics.add.collider(this.player, this.collisionsLayer);
         // this.initMiniMap();
     }
