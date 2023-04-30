@@ -1,7 +1,8 @@
 import * as Phaser from 'phaser';
 import GameConfig = Phaser.Types.Core.GameConfig;
 import {LoadingScene} from "./Scenes";
-import {Player} from "./GameObjects";
+import {LightPillar, Player} from "./GameObjects";
+import { EventDispatcher } from './events/EventDispatcher';
 
 declare global {
     var baseUrl: string;
@@ -14,6 +15,7 @@ declare global {
     }
 }
 
+globalThis.eventDispatcher = EventDispatcher.getInstance();
 globalThis.baseUrl = "assets/";
 globalThis.gameWidth = 240;
 globalThis.gameHeight = 224;
@@ -30,6 +32,9 @@ export default class DemoScene extends Phaser.Scene {
     private foregroundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
     private collisionsLayer!: Phaser.Tilemaps.TilemapLayer;
     private player!: Player;
+    private cyanLightPillar!: LightPillar;
+    private purpleLightPillar!: LightPillar;
+    private yellowLightPillar!: LightPillar;
     
     constructor () {
         super('DemoScene');
@@ -74,6 +79,33 @@ export default class DemoScene extends Phaser.Scene {
     create () {
         this.initMap();
         this.player = new Player(this, 0, 780);
+        this.cyanLightPillar = new LightPillar(
+            this, 
+            64, 
+            780, 
+            'cyan', 
+            this.player,
+            'test', 
+            { payload: 1 }
+        );
+        this.purpleLightPillar = new LightPillar(
+            this, 
+            128, 
+            780, 
+            'purple', 
+            this.player,
+            'test', 
+            { payload: 2 }
+        );
+        this.yellowLightPillar = new LightPillar(
+            this, 
+            192, 
+            780, 
+            'yellow', 
+            this.player,
+            'test', 
+            { payload: 3 }
+        );
         this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);
         this.foregroundSecondaryLayer = this.map.createLayer('foreground-secondary', this.tileSet, 0, 0);
         this.physics.add.collider(this.player, this.collisionsLayer);
