@@ -7,6 +7,8 @@ export class Player extends Actor {
     private keyA: Phaser.Input.Keyboard.Key;
     private keyS: Phaser.Input.Keyboard.Key;
     private keyD: Phaser.Input.Keyboard.Key;
+    private keyQ: Phaser.Input.Keyboard.Key;
+    private keyE: Phaser.Input.Keyboard.Key;
 
     constructor(scene: Phaser.Scene, x: number, y: number) {
         super(scene, x, y, "player");
@@ -17,6 +19,8 @@ export class Player extends Actor {
         this.keyA = this.scene.input.keyboard.addKey('A');
         this.keyS = this.scene.input.keyboard.addKey('S');
         this.keyD = this.scene.input.keyboard.addKey('D');
+        this.keyQ = this.scene.input.keyboard.addKey('Q');
+        this.keyE = this.scene.input.keyboard.addKey('E');
 
         this.getBody().setSize(12, 8);
         this.getBody().setOffset(2, 12);
@@ -29,8 +33,6 @@ export class Player extends Actor {
         }
         if (this.keyA.isDown) {
             velocity.add(Vector2.LEFT);
-            // this.getBody().setOffset(48, 15);
-            this.anims.play('walk', true);
         }
         if (this.keyS.isDown) {
             velocity.add(Vector2.DOWN);
@@ -39,7 +41,6 @@ export class Player extends Actor {
             velocity.add(Vector2.RIGHT);
         }
 
-        // velocity.normalize().scale(64);
         velocity.scale(64);
         this.getBody().setVelocity(velocity.x, velocity.y);
 
@@ -47,6 +48,13 @@ export class Player extends Actor {
             this.anims.play('walk', true);
         } else {
             this.anims.stop();
+        }
+
+        if (Phaser.Input.Keyboard.JustDown(this.keyQ)) {
+            this.decrementHp();
+        }
+        if (Phaser.Input.Keyboard.JustDown(this.keyE)) {
+            this.incrementHp();
         }
     }
 
@@ -60,7 +68,17 @@ export class Player extends Actor {
         });
     }
 
-    private playAnimation(key: string): void {
-        this.anims.play(key, true);
+    private incrementHp(): void {
+        this.hp++;
+        if (this.hp > this.maxHp) {
+            this.hp = this.maxHp;
+        }
+    }
+
+    private decrementHp(): void {
+        this.hp--;
+        if (this.hp < 0) {
+            this.hp = 0;
+        }
     }
 }
