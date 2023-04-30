@@ -24,6 +24,10 @@ export class Player extends Actor {
 
         this.getBody().setSize(12, 8);
         this.getBody().setOffset(2, 12);
+
+        globalThis.eventDispatcher.on('test', (payload: any) => {
+            console.log({ payload });
+        });
     }
 
     update(): void {
