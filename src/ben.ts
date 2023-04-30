@@ -1,7 +1,7 @@
 import * as Phaser from 'phaser';
-import GameConfig = Phaser.Types.Core.GameConfig;
 import {LoadingScene} from "./Scenes";
-import {Player} from "./GameObjects";
+import {Player, UIObject} from "./GameObjects";
+import GameConfig = Phaser.Types.Core.GameConfig;
 
 declare global {
     var baseUrl: string;
@@ -20,6 +20,7 @@ globalThis.gameHeight = 224;
 
 export default class DemoScene extends Phaser.Scene {
     private player!: Player;
+    private ui!: UIObject;
     private map!: Phaser.Tilemaps.Tilemap;
     private tileSet!: Phaser.Tilemaps.Tileset;
     private groundLayer!: Phaser.Tilemaps.TilemapLayer;
@@ -32,26 +33,22 @@ export default class DemoScene extends Phaser.Scene {
         super('DemoScene');
     }
 
-    init(data: unknown) {
-        console.log("DemoScene.init", data);
-    }
-
     preload() {
-        console.log("DemoScene.preload");
         this.load.image('tiles', './assets/apocalypse_2.png');
         this.load.tilemapTiledJSON('map', './assets/town-basic.tmj');
     }
 
     create() {
-        console.log("DemoScene.create");
         this.initMap();
         this.player = new Player(this, 0, 0);
         this.physics.add.collider(this.player, this.collisionsLayer);
+        this.ui = new UIObject(this, this.player);
         this.initCamera();
     }
 
     update(time: number, delta: number) {
         this.player.update();
+        this.ui.update();
     }
 
     initMap() {
@@ -68,23 +65,10 @@ export default class DemoScene extends Phaser.Scene {
     }
 
     private initCamera() {
-        console.log(window.game.scale.width, window.game.scale.height);
         this.cameras.main.setSize(window.game.scale.width, window.game.scale.height);
-        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
+        this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
     }
 }
-
-const config: GameConfig = {
-    type: Phaser.AUTO,
-    backgroundColor: '#111111',
-    width: 240,
-    height: 224,
-    scale: {
-        mode: Phaser.Scale.FIT,
-    },
-    pixelArt: true,
-    scene: [LoadingScene, DemoScene]
-};
 
 const gameConfig: GameConfig = {
     title: 'Phaser game tutorial',
@@ -93,8 +77,8 @@ const gameConfig: GameConfig = {
     backgroundColor: '#111111',
     scale: {
         mode: Phaser.Scale.ScaleModes.NONE,
-        width: 240,
-        height: 224,
+        width: globalThis.gameWidth,
+        height: globalThis.gameHeight,
     },
     physics: {
         default: 'arcade',
