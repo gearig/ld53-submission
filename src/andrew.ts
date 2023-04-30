@@ -5,6 +5,8 @@ import {Player} from "./GameObjects";
 
 declare global {
     var baseUrl: string;
+    var gameWidth: number;
+    var gameHeight: number;
 
     interface Window {
         sizeChanged: () => void;
@@ -13,6 +15,8 @@ declare global {
 }
 
 globalThis.baseUrl = "assets/";
+globalThis.gameWidth = 240;
+globalThis.gameHeight = 224;
 
 export default class DemoScene extends Phaser.Scene {
     private map!: Phaser.Tilemaps.Tilemap;
@@ -23,6 +27,7 @@ export default class DemoScene extends Phaser.Scene {
     private onGroundLayer!: Phaser.Tilemaps.TilemapLayer;
     private onGroundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
     private foregroundLayer!: Phaser.Tilemaps.TilemapLayer;
+    private foregroundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
     private collisionsLayer!: Phaser.Tilemaps.TilemapLayer;
     private player!: Player;
     
@@ -44,6 +49,7 @@ export default class DemoScene extends Phaser.Scene {
         this.collisionsLayer = this.map.createLayer('collisions', this.tileSet, 0, 0);
         this.collisionsLayer.setVisible(false);
         this.collisionsLayer.setCollisionByProperty({ collides: true });
+        this.physics.world.setBounds(0, 0, this.collisionsLayer.width, this.collisionsLayer.height);
     }
 
     // initMiniMap() {
@@ -56,7 +62,6 @@ export default class DemoScene extends Phaser.Scene {
     // }
 
     initCamera() {
-        console.log(window.game.scale.width, window.game.scale.height);
         this.cameras.main.setSize(window.game.scale.width, window.game.scale.height);
         this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     }
@@ -70,8 +75,9 @@ export default class DemoScene extends Phaser.Scene {
         this.initMap();
         this.player = new Player(this, 0, 780);
         this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);
-        this.initCamera();
+        this.foregroundSecondaryLayer = this.map.createLayer('foreground-secondary', this.tileSet, 0, 0);
         this.physics.add.collider(this.player, this.collisionsLayer);
+        this.initCamera();
         // this.initMiniMap();
     }
 
@@ -99,8 +105,8 @@ const gameConfig: GameConfig = {
     backgroundColor: '#111111',
     scale: {
         mode: Phaser.Scale.ScaleModes.NONE,
-        width: window.innerWidth,
-        height: window.innerHeight
+        width: 240,
+        height: 224,
     },
     physics: {
         default: 'arcade',
@@ -126,18 +132,18 @@ const gameConfig: GameConfig = {
 };
 
 window.sizeChanged = () => {
-    if (window.game.isBooted) {
-        setTimeout(() => {
-            window.game.scale.resize(window.innerWidth, window.innerHeight);
-            window.game.canvas.setAttribute(
-                'style',
-                `display: block; width: ${window.innerWidth}px; height: ${window.innerHeight}px;`,
-            );
-        }, 100);
-    }
+    const {innerWidth, innerHeight} = window;
+    const {gameWidth, gameHeight} = globalThis;
+    const aspect = innerWidth / innerHeight;
+    const desiredAspect = gameWidth / gameHeight;
+    const scale = Math.floor(aspect >= desiredAspect ? innerHeight / gameWidth : innerWidth / gameHeight);
+    const width = Math.round(aspect >= desiredAspect ? gameWidth * aspect : gameWidth);
+    const height = Math.round(aspect >= desiredAspect ? gameHeight : gameHeight * (1 / aspect));
+    window.game.scale.setZoom(scale);
+    window.game.scale.resize(width, height);
+    window.game.canvas.style.width = `${innerWidth}px`;
+    window.game.canvas.style.height = `${innerHeight}px`;
 };
 window.onresize = () => window.sizeChanged();
 
 window.game = new Phaser.Game(gameConfig);
-
-console.log("weeee");
