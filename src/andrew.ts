@@ -3,6 +3,7 @@ import GameConfig = Phaser.Types.Core.GameConfig;
 import {LoadingScene} from "./Scenes";
 import {LightPillar, Player} from "./GameObjects";
 import { EventDispatcher } from './events/EventDispatcher';
+import { EventNames } from './events/EventNames';
 
 declare global {
     var baseUrl: string;
@@ -78,14 +79,14 @@ export default class DemoScene extends Phaser.Scene {
 
     create () {
         this.initMap();
-        this.player = new Player(this, 0, 780);
+        this.player = new Player(this, 503, 687/*780*/);
         this.cyanLightPillar = new LightPillar(
             this, 
-            64, 
-            780, 
+            407, 
+            624, 
             'cyan', 
             this.player,
-            'test', 
+            EventNames.SUPPLIES, 
             { payload: 1 }
         );
         this.purpleLightPillar = new LightPillar(
@@ -94,7 +95,7 @@ export default class DemoScene extends Phaser.Scene {
             780, 
             'purple', 
             this.player,
-            'test', 
+            EventNames.TELEPORT, 
             { payload: 2 }
         );
         this.yellowLightPillar = new LightPillar(
@@ -103,7 +104,7 @@ export default class DemoScene extends Phaser.Scene {
             780, 
             'yellow', 
             this.player,
-            'test', 
+            EventNames.TEST, 
             { payload: 3 }
         );
         this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);

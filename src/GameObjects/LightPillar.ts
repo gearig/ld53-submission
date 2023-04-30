@@ -1,13 +1,13 @@
 import * as Phaser from "phaser";
 import { Interactive } from "./Interactive";
 import { Player } from "./Player";
+import { EventNames } from "../events/EventNames";
 
 type LightPillarColor = "yellow" | "purple" | "cyan";
-type LightPillarEvents = "supplies" | "teleport" | "test";
+type LightPillarEvents = EventNames.SUPPLIES | EventNames.TELEPORT | EventNames.TEST;
 
 export class LightPillar extends Interactive {
     private pillarIdentifier: `${LightPillarColor}-light-pillar`;
-    // private eventEmitter = new Phaser.Events.EventEmitter();
     private eventName: LightPillarEvents;
     private payload: any;
 
@@ -26,8 +26,8 @@ export class LightPillar extends Interactive {
         this.payload = payload;
         this.onOverlap.bind(this);
         this.animatePillar();
-        this.getBody().setSize(2, 32);
-        this.getBody().setOffset(15, 0);
+        this.getBody().setSize(2, 12);
+        this.getBody().setOffset(15, 20);
     }
 
     private animatePillar(): void {
