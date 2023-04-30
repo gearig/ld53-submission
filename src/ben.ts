@@ -5,6 +5,8 @@ import {Player} from "./GameObjects";
 
 declare global {
     var baseUrl: string;
+    var gameWidth: number;
+    var gameHeight: number;
 
     interface Window {
         sizeChanged: () => void;
@@ -13,32 +15,62 @@ declare global {
 }
 
 globalThis.baseUrl = "assets/";
+globalThis.gameWidth = 240;
+globalThis.gameHeight = 224;
 
-export default class DemoScene extends Phaser.Scene
-{
+export default class DemoScene extends Phaser.Scene {
     private player!: Player;
-    constructor ()
-    {
+    private map!: Phaser.Tilemaps.Tilemap;
+    private tileSet!: Phaser.Tilemaps.Tileset;
+    private groundLayer!: Phaser.Tilemaps.TilemapLayer;
+    private groundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
+    private onGroundLayer!: Phaser.Tilemaps.TilemapLayer;
+    private onGroundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
+    private collisionsLayer!: Phaser.Tilemaps.TilemapLayer;
+
+    constructor() {
         super('DemoScene');
     }
 
-    init (data: unknown) {
+    init(data: unknown) {
         console.log("DemoScene.init", data);
     }
 
-    preload ()
-    {
+    preload() {
         console.log("DemoScene.preload");
+        this.load.image('tiles', './assets/apocalypse_2.png');
+        this.load.tilemapTiledJSON('map', './assets/town-basic.tmj');
     }
 
-    create ()
-    {
+    create() {
         console.log("DemoScene.create");
-        this.player = new Player(this, 100, 100);
+        this.initMap();
+        this.player = new Player(this, 0, 0);
+        this.physics.add.collider(this.player, this.collisionsLayer);
+        this.initCamera();
     }
 
     update(time: number, delta: number) {
         this.player.update();
+    }
+
+    initMap() {
+        this.map = this.make.tilemap({key: 'map', tileWidth: 16, tileHeight: 16});
+        this.tileSet = this.map.addTilesetImage('post-apocalyptic', 'tiles');
+        this.groundLayer = this.map.createLayer('ground', this.tileSet, 0, 0);
+        this.groundSecondaryLayer = this.map.createLayer('ground-secondary', this.tileSet, 0, 0);
+        this.onGroundLayer = this.map.createLayer('on-ground', this.tileSet, 0, 0);
+        this.onGroundSecondaryLayer = this.map.createLayer('on-ground-secondary', this.tileSet, 0, 0);
+        this.collisionsLayer = this.map.createLayer('collisions', this.tileSet, 0, 0);
+        this.collisionsLayer.setVisible(false);
+        this.collisionsLayer.setCollisionByProperty({collides: true});
+        this.physics.world.setBounds(0, 0, this.collisionsLayer.width, this.collisionsLayer.height);
+    }
+
+    private initCamera() {
+        console.log(window.game.scale.width, window.game.scale.height);
+        this.cameras.main.setSize(window.game.scale.width, window.game.scale.height);
+        this.cameras.main.startFollow(this.player, true, 0.1, 0.1);
     }
 }
 
@@ -61,8 +93,8 @@ const gameConfig: GameConfig = {
     backgroundColor: '#111111',
     scale: {
         mode: Phaser.Scale.ScaleModes.NONE,
-        width: window.innerWidth,
-        height: window.innerHeight,
+        width: 240,
+        height: 224,
     },
     physics: {
         default: 'arcade',
@@ -88,18 +120,18 @@ const gameConfig: GameConfig = {
 };
 
 window.sizeChanged = () => {
-    if (window.game.isBooted) {
-        setTimeout(() => {
-            window.game.scale.resize(window.innerWidth, window.innerHeight);
-            window.game.canvas.setAttribute(
-                'style',
-                `display: block; width: ${window.innerWidth}px; height: ${window.innerHeight}px;`,
-            );
-        }, 100);
-    }
+    const {innerWidth, innerHeight} = window;
+    const {gameWidth, gameHeight} = globalThis;
+    const aspect = innerWidth / innerHeight;
+    const desiredAspect = gameWidth / gameHeight;
+    const scale = Math.floor(aspect >= desiredAspect ? innerHeight / gameWidth : innerWidth / gameHeight);
+    const width = Math.round(aspect >= desiredAspect ? gameWidth * aspect : gameWidth);
+    const height = Math.round(aspect >= desiredAspect ? gameHeight : gameHeight * (1 / aspect));
+    window.game.scale.setZoom(scale);
+    window.game.scale.resize(width, height);
+    window.game.canvas.style.width = `${innerWidth}px`;
+    window.game.canvas.style.height = `${innerHeight}px`;
 };
 window.onresize = () => window.sizeChanged();
 
 window.game = new Phaser.Game(gameConfig);
-
-console.log("weeee");

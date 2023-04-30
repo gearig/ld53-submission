@@ -1,4 +1,6 @@
+import * as Phaser from 'phaser';
 import {Actor} from "./Actor";
+import Vector2 = Phaser.Math.Vector2;
 
 export class Player extends Actor {
     private keyW: Phaser.Input.Keyboard.Key;
@@ -16,33 +18,32 @@ export class Player extends Actor {
         this.keyS = this.scene.input.keyboard.addKey('S');
         this.keyD = this.scene.input.keyboard.addKey('D');
 
-        this.getBody().setSize(16, 16);
-        this.getBody().setOffset(0, 4);
+        this.getBody().setSize(12, 8);
+        this.getBody().setOffset(2, 12);
     }
 
     update(): void {
-        this.getBody().setVelocity(0);
+        const velocity: Vector2 = new Vector2();
         if (this.keyW.isDown) {
-            this.body.velocity.y = -110;
+            velocity.add(Vector2.UP);
         }
         if (this.keyA.isDown) {
-            this.body.velocity.x = -110;
-            // this.checkFlip();
+            velocity.add(Vector2.LEFT);
             // this.getBody().setOffset(48, 15);
             this.anims.play('walk', true);
         }
         if (this.keyS.isDown) {
-            this.body.velocity.y = 110;
-            this.anims.play('walk', true);
+            velocity.add(Vector2.DOWN);
         }
         if (this.keyD.isDown) {
-            this.body.velocity.x = 110;
-            // this.checkFlip();
-            // this.getBody().setOffset(15, 15);
-            this.anims.play('walk', true);
+            velocity.add(Vector2.RIGHT);
         }
 
-        if (this.keyW.isDown || this.keyA.isDown || this.keyS.isDown || this.keyD.isDown) {
+        // velocity.normalize().scale(64);
+        velocity.scale(64);
+        this.getBody().setVelocity(velocity.x, velocity.y);
+
+        if (velocity.length() > 0) {
             this.anims.play('walk', true);
         } else {
             this.anims.stop();

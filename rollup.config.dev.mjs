@@ -70,7 +70,6 @@ export default {
             port: 10001,
             headers: {
                 'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Origin2': '*'
             }
         }),
 
