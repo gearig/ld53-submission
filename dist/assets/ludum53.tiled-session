@@ -8,6 +8,10 @@
     ],
     "file.lastUsedOpenFilter": "All Files (*)",
     "fileStates": {
+        "": {
+            "scaleInDock": 10.1732,
+            "scaleInEditor": 1
+        },
         "#post-apocalyptic": {
             "scaleInDock": 1
         },
@@ -19,16 +23,44 @@
             "scaleInDock": 1,
             "scaleInEditor": 1
         },
+        "small-collisions.tsj": {
+            "scaleInDock": 5.5482,
+            "scaleInEditor": 15.8403
+        },
         "town-basic.tmj": {
-            "scale": 1.5781874999999999,
-            "selectedLayer": 0,
+            "scale": 2.8262,
+            "selectedLayer": 5,
             "viewCenter": {
-                "x": 399.19211120351673,
-                "y": 400.1425686111441
+                "x": 165.9472082655155,
+                "y": 551.4471728823155
             }
+        },
+        "town-basic.tmj#2x16-collider": {
+            "scaleInEditor": 35.5782
+        },
+        "town-basic.tmj#4x16-collider": {
+            "dynamicWrapping": true,
+            "scaleInEditor": 70.4375
+        },
+        "town-basic.tmj#4x4_collider": {
+            "dynamicWrapping": true,
+            "scaleInEditor": 1
+        },
+        "town-basic.tmj#fence-collisions": {
+            "dynamicWrapping": false,
+            "scaleInDock": 8.3728,
+            "scaleInEditor": 14.0438
+        },
+        "town-basic.tmj#fence-collisions-image": {
+            "dynamicWrapping": true,
+            "scaleInDock": 43.2328,
+            "scaleInEditor": 249.9
         },
         "town-basic.tmj#post-apocalyptic": {
             "dynamicWrapping": false,
+            "scaleInDock": 2.8238
+        },
+        "town-basic.tmj#small_collisions": {
             "scaleInDock": 1
         },
         "town-basic.tmx": {
@@ -57,9 +89,18 @@
     "property.type": "bool",
     "recentFiles": [
         "town-basic.tmj",
+        "small-collisions.tsj",
         "post-apocalyptic.tsj",
         "town-basic.tmx",
         "post-apocalyptic.tsx"
     ],
-    "tileset.lastUsedFormat": "json"
+    "tileset.embedInMap": true,
+    "tileset.lastUsedFormat": "json",
+    "tileset.margin": 0,
+    "tileset.spacing": 0,
+    "tileset.tileSize": {
+        "height": 16,
+        "width": 16
+    },
+    "tileset.type": 1
 }

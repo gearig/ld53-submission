@@ -16,11 +16,13 @@ globalThis.baseUrl = "assets/";
 
 export default class DemoScene extends Phaser.Scene {
     private map!: Phaser.Tilemaps.Tilemap;
+    // private miniMap!: Phaser.Cameras.Scene2D.Camera;
     private tileSet!: Phaser.Tilemaps.Tileset;
     private groundLayer!: Phaser.Tilemaps.TilemapLayer;
     private groundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
     private onGroundLayer!: Phaser.Tilemaps.TilemapLayer;
     private onGroundSecondaryLayer!: Phaser.Tilemaps.TilemapLayer;
+    private foregroundLayer!: Phaser.Tilemaps.TilemapLayer;
     private collisionsLayer!: Phaser.Tilemaps.TilemapLayer;
     private player!: Player;
     
@@ -44,6 +46,15 @@ export default class DemoScene extends Phaser.Scene {
         this.collisionsLayer.setCollisionByProperty({ collides: true });
     }
 
+    // initMiniMap() {
+    //     this.miniMap = this.cameras.add(0, 0, 240, 224).setZoom(0.1);
+    //     this.miniMap.setBackgroundColor(0x000000);
+    //     this.miniMap.scrollX = 0;
+    //     this.miniMap.scrollY = 0;
+    //     this.miniMap.setBounds(0, 0, 240, 224);
+    //     this.miniMap.startFollow(this.player, true, 0.1, 0.1);
+    // }
+
     preload () {
         this.load.image('tiles', './assets/apocalypse_2.png');
         this.load.tilemapTiledJSON('map', './assets/town-basic.tmj');
@@ -52,7 +63,9 @@ export default class DemoScene extends Phaser.Scene {
     create () {
         this.initMap();
         this.player = new Player(this, 0, 780);
+        this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);
         this.physics.add.collider(this.player, this.collisionsLayer);
+        // this.initMiniMap();
     }
 
     update(time: number, delta: number) {
