@@ -3,6 +3,10 @@ import {LightPillar, Player, UIObject} from "../GameObjects";
 import {MedKit} from "../GameObjects/MedKit";
 import {EventNames} from "../events";
 import {RenderingDepths} from "../common";
+import { MissionsService } from "../Missions/MissionsService";
+import { MissionStep } from "../Missions/MissionStep";
+import { MissionActions } from "../Missions/constants/enums";
+import { Mission } from "../Missions/Mission";
 import {Bullet} from "../GameObjects/Bullet";
 import {Bullets} from "../GameObjects/Bullets";
 
@@ -50,8 +54,9 @@ export default class WorldScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
+        const currentMission = this?.Missions?.currentMission;
+        this.ui.update(currentMission, this.totalPoints);
         this.player.update(time, delta);
-        this.ui.update();
     }
 
     private initMap() {
