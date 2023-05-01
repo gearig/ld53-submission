@@ -8,12 +8,14 @@ export class Mission {
     public type: MissionTypes;
     public missionSteps: MissionStep[];
     public potentialCasualties: number;
+    public casualties: number = 0;
     public success: boolean = true;
     public deliveryPoints: number;
+    public currentStepIndex: number;
 
-    private currentStepIndex: number;
     private timeStarted: number;
     private timeEnded: number;
+    private casualtyTimer;
 
     public get currentPoints() {
         if (!this.success || !this.deliveryPoints) return 0;
@@ -28,6 +30,10 @@ export class Mission {
         return this.missionSteps[this.currentStepIndex] || null;
     }
 
+    public get aliveRemaining() {
+        return this.potentialCasualties - this.casualties;
+    }
+
     constructor(config: MissionConfig) {
         this.severity = config.severity;
         this.type = config.type;
@@ -39,6 +45,7 @@ export class Mission {
         this.currentStepIndex = 0;
         this.deliveryPoints = 0;
         this.timeStarted = Date.now();
+        this.beginCasualties();
         globalThis.eventDispatcher.emit(EventNames.MISSION_STEP_START, this.currentStep);
     }
 
@@ -46,6 +53,7 @@ export class Mission {
         if (!this.timeEnded) {
             this.success = success;
             this.timeEnded = Date.now();
+            this.endCasualties();
             globalThis.eventDispatcher.emit(EventNames.MISSION_END, this);
         }
     }
@@ -59,5 +67,19 @@ export class Mission {
         }
 
         globalThis.eventDispatcher.emit(EventNames.MISSION_STEP_START, nextStep);
+    }
+
+    private beginCasualties() {
+        const casualtyTimer = this.severity < 3 ? 1500 : 1000;
+        this.casualtyTimer = setInterval(() => {
+            this.casualties++;
+            if (this.casualties === this.potentialCasualties) {
+                this.endMission(false);
+            }
+        }, casualtyTimer);
+    }
+
+    private endCasualties() {
+        clearInterval(this.casualtyTimer);
     }
 }

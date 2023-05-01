@@ -72,3 +72,4 @@ export const REPORT_LOCATIONS = {
 }
 
 export const MISSION_TYPES: MissionTypes[] = [MissionTypes.PICKUP_DROPOFF, MissionTypes.REPORT];
+export const MAX_SEVERITY_LEVEL = 5;

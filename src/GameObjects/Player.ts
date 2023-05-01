@@ -94,7 +94,7 @@ export class Player extends Actor {
             this.medKits += payload.count;
         });
         globalThis.eventDispatcher.on(EventNames.GIVE_SUPPLIES, (payload: any) => {
-            console.log({ payload });
+            // this.medKits -= 
         });
         globalThis.eventDispatcher.on(EventNames.TELEPORT, (payload: any) => {
             console.log({ payload });
@@ -115,6 +115,4 @@ export class Player extends Actor {
     public getMedKitCount(): number {
         return this.medKits;
     }
-
-
 }

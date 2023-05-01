@@ -56,8 +56,9 @@ export default class WorldScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
+        const currentMission = this?.Missions?.currentMission;
         this.player.update();
-        this.ui.update();
+        this.ui.update(currentMission, this.totalPoints);
     }
 
     private initMap() {
@@ -148,7 +149,7 @@ export default class WorldScene extends Phaser.Scene {
             'cyan', 
             this.player,
             EventNames.GET_SUPPLIES,
-            { payload: 1 },
+            { count: 5 },
             this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
         );
     }
@@ -166,6 +167,7 @@ export default class WorldScene extends Phaser.Scene {
             { },
             () => {
                 // this.Missions.currentMission.deliveryPoints += this.player.getMedKitCount();
+                // const medKits = this.player.getMedKitCount();
                 this.Missions.currentMission.deliveryPoints += 100;
                 dispatchNextStep();
             }
