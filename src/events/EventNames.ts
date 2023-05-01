@@ -9,4 +9,5 @@ export enum EventNames {
     REPORT_ARRIVAL = 'report-arrival',
     TELEPORT = 'teleport',
     TEST = 'test',
+    FIRE = 'fire',
 }

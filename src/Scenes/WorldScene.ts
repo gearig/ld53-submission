@@ -7,6 +7,8 @@ import { MissionsService } from "../Missions/MissionsService";
 import { MissionStep } from "../Missions/MissionStep";
 import { MissionActions } from "../Missions/constants/enums";
 import { Mission } from "../Missions/Mission";
+import {Bullet} from "../GameObjects/Bullet";
+import {Bullets} from "../GameObjects/Bullets";
 
 declare global {
     var eventDispatcher: EventDispatcher;   
@@ -35,6 +37,8 @@ export default class WorldScene extends Phaser.Scene {
     private purpleLightPillar!: LightPillar;
     private yellowLightPillar!: LightPillar;
 
+    public bulletGroup: Phaser.Physics.Arcade.Group;
+
     constructor() {
         super('WorldScene');
     }
@@ -48,6 +52,7 @@ export default class WorldScene extends Phaser.Scene {
         this.initMap();
         this.initPlayer();
         this.initUI();
+        this.initBullets();
         new MedKit(this, 560, 680, this.player);
         this.initCamera();
         this.listenToEvents();
@@ -57,8 +62,8 @@ export default class WorldScene extends Phaser.Scene {
 
     update(time: number, delta: number) {
         const currentMission = this?.Missions?.currentMission;
-        this.player.update();
         this.ui.update(currentMission, this.totalPoints);
+        this.player.update(time, delta);
     }
 
     private initMap() {
@@ -87,6 +92,13 @@ export default class WorldScene extends Phaser.Scene {
     private initPlayer() {
         this.player = new Player(this, 504, 680);
         this.physics.add.collider(this.player, this.collisionsLayer);
+    }
+
+    private initBullets() {
+        this.bulletGroup = new Bullets(this);
+        this.physics.add.collider(this.bulletGroup, this.collisionsLayer, (bullet: Bullet) => {
+            bullet.disable();
+        });
     }
 
     private initUI() {

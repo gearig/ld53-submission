@@ -186,7 +186,7 @@ export default class AndrewScene extends Phaser.Scene {
     }
 
     update(time: number, delta: number) {
-        this.player.update();
+        this.player.update(time, delta);
     }
 }
 
