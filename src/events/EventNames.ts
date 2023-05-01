@@ -6,4 +6,5 @@ export enum EventNames {
     MISSION_END = 'mission-end',
     MISSION_START = 'mission-start',
     TEST = 'test',
+    FIRE = 'fire',
 }

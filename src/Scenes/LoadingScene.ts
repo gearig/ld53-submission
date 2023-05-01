@@ -12,9 +12,9 @@ export class LoadingScene extends Scene {
     preload() {
         console.log("LoadingScene.preload");
         this.load.baseURL = globalThis.baseUrl;
-        this.load.spritesheet("player", "free_character_nude.png", {
+        this.load.spritesheet("player", "guy-man-walking.png", {
             frameWidth: 16,
-            frameHeight: 20,
+            frameHeight: 16,
         });
         this.load.spritesheet("cyan-light-pillar", "cyan-light-pillar.png", {
             frameWidth: 32,
