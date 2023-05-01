@@ -90,32 +90,25 @@ export class Player extends Actor {
         globalThis.eventDispatcher.on(EventNames.HEALTH, (payload: any) => {
             console.log({ payload });
         });
+        globalThis.eventDispatcher.on(EventNames.GET_SUPPLIES, (payload: GetSuppliesPayload) => {
+            this.medKits += payload.count;
+        });
         globalThis.eventDispatcher.on(EventNames.GIVE_SUPPLIES, (payload: any) => {
             console.log({ payload });
         });
         globalThis.eventDispatcher.on(EventNames.TELEPORT, (payload: any) => {
             console.log({ payload });
         });
-        globalThis.eventDispatcher.on(EventNames.MISSION_END, (payload: any) => {
-            console.log({ payload });
-        });
-        globalThis.eventDispatcher.on(EventNames.MISSION_START, (payload: any) => {
-            console.log({ payload });
-        });
         globalThis.eventDispatcher.on(EventNames.TEST, (payload: any) => {
             console.log({ payload });
-        });
-        globalThis.eventDispatcher.on(EventNames.GET_SUPPLIES, (payload: GetSuppliesPayload) => {
-            this.medKits += payload.count;
         });
     }
 
     public stopListeningToEvents(): void {
         globalThis.eventDispatcher.off(EventNames.HEALTH);
+        globalThis.eventDispatcher.off(EventNames.GET_SUPPLIES);
         globalThis.eventDispatcher.off(EventNames.GIVE_SUPPLIES);
         globalThis.eventDispatcher.off(EventNames.TELEPORT);
-        globalThis.eventDispatcher.off(EventNames.MISSION_END);
-        globalThis.eventDispatcher.off(EventNames.MISSION_START);
         globalThis.eventDispatcher.off(EventNames.TEST);
     }
 

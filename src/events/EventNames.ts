@@ -1,9 +1,12 @@
 export enum EventNames {
-    HEALTH = 'health',
+    GAME_OVER = 'game-over',
     GET_SUPPLIES = 'get-supplies',
     GIVE_SUPPLIES = 'give-supplies',
-    TELEPORT = 'teleport',
+    HEALTH = 'health',
     MISSION_END = 'mission-end',
     MISSION_START = 'mission-start',
+    MISSION_STEP_START = 'step-start',
+    REPORT_ARRIVAL = 'report-arrival',
+    TELEPORT = 'teleport',
     TEST = 'test',
 }

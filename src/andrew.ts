@@ -1,8 +1,12 @@
 import * as Phaser from 'phaser';
+import GameConfig = Phaser.Types.Core.GameConfig;
 import {LoadingScene} from "./Scenes";
 import {LightPillar, Player} from "./GameObjects";
 import {EventDispatcher, EventNames} from './events';
-import GameConfig = Phaser.Types.Core.GameConfig;
+import { MissionsService } from './Missions/MissionsService';
+import { MissionActions, MissionTypes } from './Missions/constants/enums';
+import { MissionStep } from './Missions/MissionStep';
+import { Mission } from './Missions/Mission';
 
 declare global {
     var baseUrl: string;
@@ -22,6 +26,8 @@ globalThis.gameWidth = 240;
 globalThis.gameHeight = 224;
 
 export default class WorldScene extends Phaser.Scene {
+    private Missions = new MissionsService();
+
     private map!: Phaser.Tilemaps.Tilemap;
     // private miniMap!: Phaser.Cameras.Scene2D.Camera;
     private tileSet!: Phaser.Tilemaps.Tileset;
@@ -36,9 +42,98 @@ export default class WorldScene extends Phaser.Scene {
     private cyanLightPillar!: LightPillar;
     private purpleLightPillar!: LightPillar;
     private yellowLightPillar!: LightPillar;
-    
+    private totalPoints: number = 0;
+
     constructor () {
         super('WorldScene');
+    }
+
+    startNextMission() {
+        this.Missions.prepareNextMission();
+        console.log({ mission: this.Missions.currentMission });
+        this.Missions.currentMission.beginMission();
+    }
+
+    destroyAllPillars() {
+        this?.cyanLightPillar?.destroy();
+        this?.purpleLightPillar?.destroy();
+        this?.yellowLightPillar?.destroy();
+    }
+
+    preparePickUpPillar(step: MissionStep) {
+        this.cyanLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'cyan', 
+            this.player,
+            EventNames.GET_SUPPLIES,
+            { payload: 1 },
+            this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        );
+    }
+
+    prepareDropOffPillar(step: MissionStep) {
+        const dispatchNextStep = this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        
+        this.purpleLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'purple', 
+            this.player,
+            EventNames.GIVE_SUPPLIES,
+            { },
+            () => {
+                // this.Missions.currentMission.deliveryPoints += this.player.getMedKitCount();
+                this.Missions.currentMission.deliveryPoints += 100;
+                dispatchNextStep();
+            }
+        );
+    }
+
+    prepareReportPillar(step: MissionStep) {
+        this.yellowLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'yellow', 
+            this.player,
+            EventNames.REPORT_ARRIVAL,
+            { },
+            this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        );
+    }
+
+    listenToEvents() {
+        globalThis.eventDispatcher.on(EventNames.MISSION_STEP_START, (step: MissionStep) => {
+            this.destroyAllPillars();
+
+            switch (step.action) {
+                case MissionActions.PICKUP: {
+                    this.preparePickUpPillar(step);
+                    break
+                }
+                case MissionActions.DROPOFF: {
+                    this.prepareDropOffPillar(step);
+                    break
+                }
+                case MissionActions.REPORT: {
+                    this.prepareReportPillar(step);
+                    break
+                }
+                default: break;
+            }
+        });
+        globalThis.eventDispatcher.on(EventNames.REPORT_ARRIVAL, () => {
+            console.log('reported');
+        });
+        globalThis.eventDispatcher.on(EventNames.MISSION_END, (completedMission: Mission) => {
+            this.totalPoints += completedMission.currentPoints;
+            console.log({ points: this.totalPoints });
+            this.destroyAllPillars();
+            this.startNextMission();
+        })
     }
 
     init (data: unknown) {
@@ -78,40 +173,15 @@ export default class WorldScene extends Phaser.Scene {
     }
 
     create () {
+        this.listenToEvents();
         this.initMap();
-        this.player = new Player(this, 503, 687/*780*/);
-        this.cyanLightPillar = new LightPillar(
-            this, 
-            407, 
-            624, 
-            'cyan', 
-            this.player,
-            EventNames.GIVE_SUPPLIES,
-            { payload: 1 }
-        );
-        this.purpleLightPillar = new LightPillar(
-            this, 
-            128, 
-            780, 
-            'purple', 
-            this.player,
-            EventNames.TELEPORT, 
-            { payload: 2 }
-        );
-        this.yellowLightPillar = new LightPillar(
-            this, 
-            192, 
-            780, 
-            'yellow', 
-            this.player,
-            EventNames.TEST, 
-            { payload: 3 }
-        );
+        this.player = new Player(this, 0, 780);
         this.foregroundLayer = this.map.createLayer('foreground', this.tileSet, 0, 0);
         this.foregroundSecondaryLayer = this.map.createLayer('foreground-secondary', this.tileSet, 0, 0);
         this.physics.add.collider(this.player, this.collisionsLayer);
         this.initCamera();
-        // this.initMiniMap();
+        this.Missions.initialize();
+        this.startNextMission();
     }
 
     update(time: number, delta: number) {
