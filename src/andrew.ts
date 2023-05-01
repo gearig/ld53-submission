@@ -4,9 +4,10 @@ import {LoadingScene} from "./Scenes";
 import {LightPillar, Player} from "./GameObjects";
 import {EventDispatcher, EventNames} from './events';
 import { MissionsService } from './Missions/MissionsService';
-import { MissionActions, MissionTypes } from './Missions/constants/enums';
+import { MissionActions } from './Missions/constants/enums';
 import { MissionStep } from './Missions/MissionStep';
 import { Mission } from './Missions/Mission';
+import WorldScene from './Scenes/WorldScene';
 
 declare global {
     var baseUrl: string;
@@ -25,7 +26,7 @@ globalThis.baseUrl = "assets/";
 globalThis.gameWidth = 240;
 globalThis.gameHeight = 224;
 
-export default class WorldScene extends Phaser.Scene {
+export default class AndrewScene extends Phaser.Scene {
     private Missions = new MissionsService();
 
     private map!: Phaser.Tilemaps.Tilemap;
