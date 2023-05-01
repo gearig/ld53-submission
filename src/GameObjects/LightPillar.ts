@@ -4,12 +4,18 @@ import { Player } from "./Player";
 import { EventNames } from "../events";
 
 type LightPillarColor = "yellow" | "purple" | "cyan";
-type LightPillarEvents = EventNames.GIVE_SUPPLIES | EventNames.TELEPORT | EventNames.TEST;
+type LightPillarEvents = 
+    EventNames.GET_SUPPLIES |
+    EventNames.GIVE_SUPPLIES | 
+    EventNames.REPORT_ARRIVAL |
+    EventNames.TELEPORT | 
+    EventNames.TEST;
 
 export class LightPillar extends Interactive {
     private pillarIdentifier: `${LightPillarColor}-light-pillar`;
     private eventName: LightPillarEvents;
     private payload: any;
+    private cb: () => any;
 
     constructor(
         scene: Phaser.Scene, 
@@ -18,12 +24,14 @@ export class LightPillar extends Interactive {
         color: LightPillarColor, 
         player: Player, 
         eventName: LightPillarEvents, 
-        payload: any
+        payload: any,
+        cb?: () => any
     ) {
         super(scene, x, y, `${color}-light-pillar`, player);
         this.pillarIdentifier = `${color}-light-pillar`;
         this.eventName = eventName;
         this.payload = payload;
+        this.cb = cb;
         this.onOverlap.bind(this);
         this.animatePillar();
         this.getBody().setSize(2, 12);
@@ -43,6 +51,7 @@ export class LightPillar extends Interactive {
 
     public onOverlap(interactive: LightPillar, player: Player): void {
         globalThis.eventDispatcher.emit(interactive.eventName, interactive.payload);
+        if (this.cb) this.cb();
         interactive.destroy();
     }
 }

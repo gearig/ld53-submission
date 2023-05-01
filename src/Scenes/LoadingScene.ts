@@ -32,6 +32,31 @@ export class LoadingScene extends Scene {
             frameWidth: 16,
             frameHeight: 16,
         });
+        this.load.spritesheet("reportMissionInd", "location-marker.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        this.load.spritesheet("directionalArrow", "arrow.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        this.load.spritesheet("skull", "skull.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+        this.load.atlas("missionSteps", "green-on-off.png", {
+            frames: {
+                "stepIncomplete": {
+                    frame: {x: 0, y: 0, w: 8, h: 8},
+                    anchor: {x: 0, y: 0}
+                },
+                "stepComplete": {
+                    frame: {x: 8, y: 8, w: 8, h: 8},
+                    anchor: {x: 0, y: 0}
+                },
+                
+            }
+        })
         this.load.atlas("icons", "free_icons1.png", {
             frames: {
                 "redBottleIcon": {

@@ -1,7 +1,7 @@
 import * as Phaser from "phaser";
 import {LightPillar, Player, UIObject} from "../GameObjects";
 import {MedKit} from "../GameObjects/MedKit";
-import {EventNames} from "../events";
+import {EventDispatcher, EventNames} from "../events";
 import {RenderingDepths} from "../common";
 import { MissionsService } from "../Missions/MissionsService";
 import { MissionStep } from "../Missions/MissionStep";
@@ -10,9 +10,16 @@ import { Mission } from "../Missions/Mission";
 import {Bullet} from "../GameObjects/Bullet";
 import {Bullets} from "../GameObjects/Bullets";
 
+declare global {
+    var eventDispatcher: EventDispatcher;   
+}
+
+globalThis.eventDispatcher = EventDispatcher.getInstance();
 
 export default class WorldScene extends Phaser.Scene {
+    private Missions = new MissionsService();
     private player!: Player;
+    private totalPoints: number = 0;
 
     private ui!: UIObject;
 
@@ -47,10 +54,10 @@ export default class WorldScene extends Phaser.Scene {
         this.initUI();
         this.initBullets();
         new MedKit(this, 560, 680, this.player);
-        this.cyanLightPillar = new LightPillar(this, 407, 624, 'cyan', this.player, EventNames.GIVE_SUPPLIES, {payload: 1});
-        this.purpleLightPillar = new LightPillar(this, 128, 780, 'purple', this.player, EventNames.TELEPORT, {payload: 2});
-        this.yellowLightPillar = new LightPillar(this, 192, 780, 'yellow', this.player, EventNames.TEST, {payload: 3});
         this.initCamera();
+        this.listenToEvents();
+        this.Missions.initialize();
+        this.startNextMission();
     }
 
     update(time: number, delta: number) {
@@ -101,5 +108,94 @@ export default class WorldScene extends Phaser.Scene {
     private initCamera() {
         this.cameras.main.setSize(window.game.scale.width, window.game.scale.height);
         this.cameras.main.startFollow(this.player, true, 0.09, 0.09);
+    }
+
+    private listenToEvents() {
+        globalThis.eventDispatcher.on(EventNames.MISSION_STEP_START, (step: MissionStep) => {
+            this.destroyAllPillars();
+
+            switch (step.action) {
+                case MissionActions.PICKUP: {
+                    this.preparePickUpPillar(step);
+                    break
+                }
+                case MissionActions.DROPOFF: {
+                    this.prepareDropOffPillar(step);
+                    break
+                }
+                case MissionActions.REPORT: {
+                    this.prepareReportPillar(step);
+                    break
+                }
+                default: break;
+            }
+        });
+        globalThis.eventDispatcher.on(EventNames.REPORT_ARRIVAL, () => {
+            console.log('reported');
+        });
+        globalThis.eventDispatcher.on(EventNames.MISSION_END, (completedMission: Mission) => {
+            this.totalPoints += completedMission.currentPoints;
+            console.log({ points: this.totalPoints });
+            this.destroyAllPillars();
+            this.startNextMission();
+        })
+    }
+
+    private startNextMission() {
+        this.Missions.prepareNextMission();
+        this.Missions.currentMission.beginMission();
+        console.log({ mission: this.Missions.currentMission });
+    }
+
+    private destroyAllPillars() {
+        this?.cyanLightPillar?.destroy();
+        this?.purpleLightPillar?.destroy();
+        this?.yellowLightPillar?.destroy();
+    }
+
+    private preparePickUpPillar(step: MissionStep) {
+        this.cyanLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'cyan', 
+            this.player,
+            EventNames.GET_SUPPLIES,
+            { count: 5 },
+            this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        );
+    }
+
+    private prepareDropOffPillar(step: MissionStep) {
+        const dispatchNextStep = this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        
+        this.purpleLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'purple', 
+            this.player,
+            EventNames.GIVE_SUPPLIES,
+            { },
+            () => {
+                // this.Missions.currentMission.deliveryPoints += this.player.getMedKitCount();
+                // const medKits = this.player.getMedKitCount();
+                this.Missions.currentMission.deliveryPoints += 100;
+                dispatchNextStep();
+            }
+        );
+    }
+
+    private prepareReportPillar(step: MissionStep) {
+        this.yellowLightPillar = new LightPillar(
+            this, 
+            step.coords[0], 
+            step.coords[1], 
+            'yellow', 
+            this.player,
+            EventNames.REPORT_ARRIVAL,
+            { },
+            this.Missions.currentMission.dispatchNextStep.bind(this.Missions.currentMission)
+        );
     }
 }
