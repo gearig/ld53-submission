@@ -1,9 +1,10 @@
 import * as Phaser from 'phaser';
 import {Actor} from "./Actor";
+import {EventNames, GetSuppliesPayload} from '../events';
 import Vector2 = Phaser.Math.Vector2;
-import { EventNames } from '../events/EventNames';
 
 export class Player extends Actor {
+    private medKits: number = 0;
     private keyW: Phaser.Input.Keyboard.Key;
     private keyA: Phaser.Input.Keyboard.Key;
     private keyS: Phaser.Input.Keyboard.Key;
@@ -29,6 +30,7 @@ export class Player extends Actor {
     }
 
     update(): void {
+        this.depth = this.y;
         const velocity: Vector2 = new Vector2();
         if (this.keyW.isDown) {
             velocity.add(Vector2.UP);
@@ -88,7 +90,7 @@ export class Player extends Actor {
         globalThis.eventDispatcher.on(EventNames.HEALTH, (payload: any) => {
             console.log({ payload });
         });
-        globalThis.eventDispatcher.on(EventNames.SUPPLIES, (payload: any) => {
+        globalThis.eventDispatcher.on(EventNames.GIVE_SUPPLIES, (payload: any) => {
             console.log({ payload });
         });
         globalThis.eventDispatcher.on(EventNames.TELEPORT, (payload: any) => {
@@ -103,14 +105,23 @@ export class Player extends Actor {
         globalThis.eventDispatcher.on(EventNames.TEST, (payload: any) => {
             console.log({ payload });
         });
+        globalThis.eventDispatcher.on(EventNames.GET_SUPPLIES, (payload: GetSuppliesPayload) => {
+            this.medKits += payload.count;
+        });
     }
 
     public stopListeningToEvents(): void {
         globalThis.eventDispatcher.off(EventNames.HEALTH);
-        globalThis.eventDispatcher.off(EventNames.SUPPLIES);
+        globalThis.eventDispatcher.off(EventNames.GIVE_SUPPLIES);
         globalThis.eventDispatcher.off(EventNames.TELEPORT);
         globalThis.eventDispatcher.off(EventNames.MISSION_END);
         globalThis.eventDispatcher.off(EventNames.MISSION_START);
         globalThis.eventDispatcher.off(EventNames.TEST);
     }
+
+    public getMedKitCount(): number {
+        return this.medKits;
+    }
+
+
 }

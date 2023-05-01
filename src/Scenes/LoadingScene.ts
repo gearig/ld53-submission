@@ -28,6 +28,10 @@ export class LoadingScene extends Scene {
             frameWidth: 32,
             frameHeight: 32,
         });
+        this.load.spritesheet("medKit", "medkit.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
         this.load.atlas("icons", "free_icons1.png", {
             frames: {
                 "redBottleIcon": {
@@ -71,19 +75,12 @@ export class LoadingScene extends Scene {
                 scale: 1
             }
         });
-        // this.load.spritesheet("icons", "free_icons1.png", {
-        //     frameWidth: 16,
-        //     frameHeight: 16,
-        // });
-
-        /*
-        const sprite = this.add.sprite(100, 100, "player");
-        sprite.play("walkDown");*/
+        this.load.audio("pickupMedKit", "pickup-med-kit.wav");
     }
 
     create() {
         console.log("LoadingScene.create");
-        this.scene.start("DemoScene");
+        this.scene.start("WorldScene");
     }
 
     update(time: number, delta: number) {
