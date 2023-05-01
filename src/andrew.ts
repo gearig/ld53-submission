@@ -1,14 +1,14 @@
 import * as Phaser from 'phaser';
-import GameConfig = Phaser.Types.Core.GameConfig;
 import {LoadingScene} from "./Scenes";
 import {LightPillar, Player} from "./GameObjects";
-import { EventDispatcher } from './events/EventDispatcher';
-import { EventNames } from './events/EventNames';
+import {EventDispatcher, EventNames} from './events';
+import GameConfig = Phaser.Types.Core.GameConfig;
 
 declare global {
     var baseUrl: string;
     var gameWidth: number;
     var gameHeight: number;
+    var eventDispatcher: EventDispatcher;
 
     interface Window {
         sizeChanged: () => void;
@@ -21,7 +21,7 @@ globalThis.baseUrl = "assets/";
 globalThis.gameWidth = 240;
 globalThis.gameHeight = 224;
 
-export default class DemoScene extends Phaser.Scene {
+export default class WorldScene extends Phaser.Scene {
     private map!: Phaser.Tilemaps.Tilemap;
     // private miniMap!: Phaser.Cameras.Scene2D.Camera;
     private tileSet!: Phaser.Tilemaps.Tileset;
@@ -38,11 +38,11 @@ export default class DemoScene extends Phaser.Scene {
     private yellowLightPillar!: LightPillar;
     
     constructor () {
-        super('DemoScene');
+        super('WorldScene');
     }
 
     init (data: unknown) {
-        console.log("DemoScene.init", data);
+        console.log("WorldScene.init", data);
     }
 
     initMap() {
@@ -86,7 +86,7 @@ export default class DemoScene extends Phaser.Scene {
             624, 
             'cyan', 
             this.player,
-            EventNames.SUPPLIES, 
+            EventNames.GIVE_SUPPLIES,
             { payload: 1 }
         );
         this.purpleLightPillar = new LightPillar(
@@ -119,18 +119,6 @@ export default class DemoScene extends Phaser.Scene {
     }
 }
 
-const config: GameConfig = {
-    type: Phaser.AUTO,
-    backgroundColor: '#111111',
-    width: 240,
-    height: 224,
-    scale: {
-        mode: Phaser.Scale.FIT,
-    },
-    pixelArt: true,
-    scene: [LoadingScene, DemoScene]
-};
-
 const gameConfig: GameConfig = {
     title: 'Phaser game tutorial',
     type: Phaser.WEBGL,
@@ -161,7 +149,7 @@ const gameConfig: GameConfig = {
     audio: {
         disableWebAudio: false,
     },
-    scene: [LoadingScene, DemoScene]
+    scene: [LoadingScene, WorldScene]
 };
 
 window.sizeChanged = () => {

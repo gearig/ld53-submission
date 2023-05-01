@@ -8,6 +8,7 @@ export abstract class Interactive extends Phaser.Physics.Arcade.Sprite {
         scene.physics.add.existing(this);
         this.getBody().setCollideWorldBounds(true);
         this.getBody().setImmovable(true);
+        this.depth = this.y;
 
         this.scene.physics.add.overlap(this, this.player, this.onOverlap.bind(this));
     }

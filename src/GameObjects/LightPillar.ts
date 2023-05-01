@@ -1,10 +1,10 @@
 import * as Phaser from "phaser";
 import { Interactive } from "./Interactive";
 import { Player } from "./Player";
-import { EventNames } from "../events/EventNames";
+import { EventNames } from "../events";
 
 type LightPillarColor = "yellow" | "purple" | "cyan";
-type LightPillarEvents = EventNames.SUPPLIES | EventNames.TELEPORT | EventNames.TEST;
+type LightPillarEvents = EventNames.GIVE_SUPPLIES | EventNames.TELEPORT | EventNames.TEST;
 
 export class LightPillar extends Interactive {
     private pillarIdentifier: `${LightPillarColor}-light-pillar`;
